@@ -1,7 +1,24 @@
 import os.path
+import argparse
 from dotenv import load_dotenv
 
 from pyicloud import PyiCloudService
+
+print('iCloud python scrypt - Download RAW and JPG Photos')
+
+# Args
+parser = argparse.ArgumentParser()
+parser.add_argument('-album_name', dest='album_name', type=str)
+parser.add_argument('-destination', dest='path', type=str)
+args = parser.parse_args()
+
+if not args.album_name:
+    print('Need -album_name argument') 
+    exit()
+
+if not args.path:
+    print('Need -path argument') 
+    exit()
 
 load_dotenv()
 
@@ -84,11 +101,11 @@ print('Authentification succeed !')
 # for album in albums:
 #     print(album)
 
-album_name = 'Marqué'
+# album_name = 'Marqué'
 
 # Obtenez l'album photo avec l'identifiant spécifié.
-print('Get photos in album :' , album_name)
-album = api.photos.albums.get(album_name)
+print('Get photos in album :' , args.album_name)
+album = api.photos.albums.get(args.album_name)
 # album = api.photos.all
 
 # Accédez à la liste des photos de l'album.
@@ -96,7 +113,7 @@ photos = album.photos
 
 # Affichez les noms de fichier des 10 premières photos de l'album.
 count = 0
-limit = 6000
+limit = 10
 for photo in photos:
     if count < limit:
         # print("id: ",photo.id, "| filename: ", photo.filename, "| size (Bytes): ", photo.size, "| created: ", photo.created)
@@ -131,7 +148,7 @@ for photo in photos:
             extention = get_extention(photo.versions[jpg_version]['type'])
             
             filename_jpg = photo.versions[jpg_version]['filename'].split('.')[0] + '_' + str(round(photo.created.timestamp())) + extention
-            path_jpg = '/media/usb/Photos/JPG/' + filename_jpg
+            path_jpg = args.path + '/JPG/' + filename_jpg
             
             if not os.path.exists(path_jpg):
                 print('Download JPG file :', filename_jpg, '| size (Mb):', round((photo.versions[jpg_version]['size'] / (1024 * 1024)), 2), progress)
@@ -154,7 +171,7 @@ for photo in photos:
             extention = get_extention(photo.versions[raw_version]['type'])
 
             filename_raw = photo.versions[raw_version]['filename'].split('.')[0] + '_' + str(round(photo.created.timestamp())) + extention
-            path_raw = '/media/usb/Photos/RAW/' + filename_raw
+            path_raw = args.path + '/RAW/' + filename_raw
 
             if not os.path.exists(path_raw):
                 print('Download RAW file :', filename_raw, '| size (Mb):', round((photo.versions[raw_version]['size'] / (1024 * 1024)), 2), progress)
@@ -172,6 +189,10 @@ for photo in photos:
                     download = photo.download(raw_version)
                     with open(path_raw, 'wb') as raw_file:
                         raw_file.write(download.raw.read())
+
+            # Delete File
+            # photo.delete()
+            # print('Photo is delete :', photo.filename, progress)
 
         else:
             print('This photo do not have RAW format :', photo.filename, progress)
