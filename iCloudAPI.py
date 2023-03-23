@@ -17,7 +17,7 @@ if not args.album_name:
     exit()
 
 if not args.path:
-    print('Need -path argument') 
+    print('Need -destination argument') 
     exit()
 
 load_dotenv()
@@ -101,7 +101,7 @@ print('Authentification succeed !')
 # for album in albums:
 #     print(album)
 
-# album_name = 'Marqué'
+# album_name = 'RAW'
 
 # Obtenez l'album photo avec l'identifiant spécifié.
 print('Get photos in album :' , args.album_name)
@@ -113,7 +113,7 @@ photos = album.photos
 
 # Affichez les noms de fichier des 10 premières photos de l'album.
 count = 0
-limit = 10
+limit = 1
 for photo in photos:
     if count < limit:
         # print("id: ",photo.id, "| filename: ", photo.filename, "| size (Bytes): ", photo.size, "| created: ", photo.created)
@@ -200,3 +200,5 @@ for photo in photos:
         count += 1
     else:
         break
+
+print("End !")
